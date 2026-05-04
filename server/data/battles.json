@@ -1,0 +1,132 @@
+[
+  {
+    "id": "stalingrad",
+    "name": "Battle of Stalingrad",
+    "year": 1942,
+    "location": "Stalingrad, Soviet Union",
+    "summary": "Germany's 6th Army besieged Stalingrad from August 1942, but a Soviet counter-encirclement (Operation Uranus) trapped 300,000 German troops. Field Marshal Paulus surrendered in February 1943, marking the turning point of the Eastern Front.",
+    "variables": [
+      { "id": "hitler-allows-retreat", "label": "Hitler allows the 6th Army to retreat before encirclement" },
+      { "id": "uranus-fails", "label": "Operation Uranus fails — Soviet flanks do not hold" },
+      { "id": "luftwaffe-airlift-succeeds", "label": "The Luftwaffe airlift fully supplies the encircled army" },
+      { "id": "paulus-breaks-out", "label": "Paulus disobeys orders and attempts a breakout in December" }
+    ]
+  },
+  {
+    "id": "dday",
+    "name": "D-Day — Normandy Landings",
+    "year": 1944,
+    "location": "Normandy, France",
+    "summary": "On June 6, 1944, Allied forces launched the largest amphibious invasion in history, establishing a beachhead in Nazi-occupied France. Despite heavy casualties at Omaha Beach, the invasion succeeded and opened the Western Front.",
+    "variables": [
+      { "id": "bad-weather-delays", "label": "Eisenhower delays the invasion — German forces discover the plan" },
+      { "id": "rommel-home", "label": "Rommel is not in Germany visiting his wife and commands the response personally" },
+      { "id": "panzer-reserves-released", "label": "Hitler releases the Panzer reserves on day one" },
+      { "id": "pas-de-calais-real", "label": "Germany correctly identifies Normandy as a feint and holds at Pas-de-Calais" }
+    ]
+  },
+  {
+    "id": "battle-of-britain",
+    "name": "Battle of Britain",
+    "year": 1940,
+    "location": "United Kingdom",
+    "summary": "From July to October 1940, the Luftwaffe attempted to destroy the RAF to enable a German invasion of Britain. The RAF held on, forcing Hitler to postpone Operation Sea Lion indefinitely.",
+    "variables": [
+      { "id": "radar-destroyed", "label": "Germany destroys British radar stations and keeps attacking them" },
+      { "id": "raf-airbases-targeted", "label": "Germany never shifts to bombing London and keeps targeting RAF airfields" },
+      { "id": "dowding-sacked-early", "label": "Air Chief Marshal Dowding is sacked before the battle begins" },
+      { "id": "sea-lion-launches", "label": "Hitler launches Operation Sea Lion in September despite RAF not being defeated" }
+    ]
+  },
+  {
+    "id": "hiroshima",
+    "name": "Hiroshima Atomic Bombing",
+    "year": 1945,
+    "location": "Hiroshima, Japan",
+    "summary": "On August 6, 1945, the United States dropped the first atomic bomb on Hiroshima, killing approximately 80,000 people instantly. Combined with the Nagasaki bombing three days later, it prompted Japan's surrender and ended World War II.",
+    "variables": [
+      { "id": "truman-chooses-demonstration", "label": "Truman opts for a demonstration on an uninhabited island instead" },
+      { "id": "japan-surrenders-after-one", "label": "Japan surrenders immediately after Hiroshima — no Nagasaki bomb" },
+      { "id": "bomb-fails", "label": "The Little Boy device malfunctions and does not detonate" },
+      { "id": "soviet-invasion-enough", "label": "The Soviet declaration of war against Japan makes the bomb unnecessary" }
+    ]
+  },
+  {
+    "id": "cuban-missile-crisis",
+    "name": "Cuban Missile Crisis",
+    "year": 1962,
+    "location": "Cuba / Washington D.C.",
+    "summary": "For 13 days in October 1962, the US and USSR stood at the brink of nuclear war after American U-2 spy planes discovered Soviet missiles being installed in Cuba. Back-channel diplomacy led to a deal: Soviet missiles left Cuba, US pledged not to invade Cuba.",
+    "variables": [
+      { "id": "kennedy-air-strikes", "label": "Kennedy chooses air strikes over a naval blockade on day one" },
+      { "id": "vasili-arkhipov-disagrees", "label": "Vasili Arkhipov agrees to launch a nuclear torpedo from B-59" },
+      { "id": "khrushchev-hardline", "label": "Khrushchev refuses to back down and keeps ships moving toward the quarantine line" },
+      { "id": "u2-not-shot-down", "label": "The U-2 over Cuba is not shot down on October 27th" }
+    ]
+  },
+  {
+    "id": "midway",
+    "name": "Battle of Midway",
+    "year": 1942,
+    "location": "Midway Atoll, Pacific Ocean",
+    "summary": "In June 1942, the US Navy, having broken Japanese naval codes, ambushed the Japanese fleet at Midway, sinking four fleet carriers in a single day. The battle shattered Japanese naval air power and shifted the momentum of the Pacific War.",
+    "variables": [
+      { "id": "codes-not-broken", "label": "The US has not broken Japanese naval codes — no advance warning" },
+      { "id": "nagumo-second-strike", "label": "Nagumo launches a second strike immediately instead of rearming for land attack" },
+      { "id": "yorktown-sunk-day-one", "label": "USS Yorktown is sunk on the first day of battle" },
+      { "id": "japan-feints-succeed", "label": "Japan's Aleutian Islands feint successfully draws away the US fleet" }
+    ]
+  },
+  {
+    "id": "pearl-harbor",
+    "name": "Attack on Pearl Harbor",
+    "year": 1941,
+    "location": "Oahu, Hawaii",
+    "summary": "On December 7, 1941, Imperial Japan launched a surprise attack on the US naval base at Pearl Harbor, sinking or damaging eight battleships. The attack brought the United States into World War II the following day.",
+    "variables": [
+      { "id": "carriers-in-port", "label": "US aircraft carriers are in Pearl Harbor during the attack" },
+      { "id": "third-wave-launched", "label": "Japan launches a third wave targeting fuel depots and repair facilities" },
+      { "id": "attack-detected-early", "label": "The radar warning is taken seriously — US fighters scramble in time" },
+      { "id": "japan-targets-panama", "label": "Japan simultaneously attacks the Panama Canal to cut Atlantic-Pacific resupply" }
+    ]
+  },
+  {
+    "id": "berlin-1945",
+    "name": "Fall of Berlin",
+    "year": 1945,
+    "location": "Berlin, Germany",
+    "summary": "In April–May 1945, Soviet forces fought a brutal urban battle to capture Berlin, the capital of Nazi Germany. Hitler died on April 30th, and Germany surrendered unconditionally on May 8th, ending the war in Europe.",
+    "variables": [
+      { "id": "western-allies-race-berlin", "label": "Eisenhower prioritizes Berlin — US/UK forces reach it before the Soviets" },
+      { "id": "hitler-flees-south", "label": "Hitler escapes to the Alpine Redoubt in Bavaria and continues resistance" },
+      { "id": "german-western-surrender-only", "label": "Germany surrenders only to the West, continuing to fight the Soviet Union" },
+      { "id": "berlin-declared-open-city", "label": "Berlin is declared an open city — no urban battle, immediate surrender" }
+    ]
+  },
+  {
+    "id": "tet-offensive",
+    "name": "Vietnam Tet Offensive",
+    "year": 1968,
+    "location": "South Vietnam",
+    "summary": "On January 30, 1968, the North Vietnamese Army and Viet Cong launched a massive coordinated attack on over 100 South Vietnamese cities during the Tet holiday ceasefire. Though a military failure, the offensive shattered American public confidence in the war.",
+    "variables": [
+      { "id": "attack-detected-early", "label": "US and South Vietnamese intelligence detect the offensive in advance" },
+      { "id": "media-reports-as-victory", "label": "Walter Cronkite and US media report Tet as a decisive American victory" },
+      { "id": "saigon-embassy-held", "label": "Viet Cong successfully hold the US Embassy in Saigon for 48 hours" },
+      { "id": "lbj-escalates", "label": "LBJ responds by massively escalating troop levels instead of seeking negotiations" }
+    ]
+  },
+  {
+    "id": "waterloo",
+    "name": "Battle of Waterloo",
+    "year": 1815,
+    "location": "Waterloo, Belgium",
+    "summary": "On June 18, 1815, Napoleon Bonaparte was decisively defeated by the Duke of Wellington's Allied army and Prussian forces under Blücher. Napoleon abdicated four days later, ending the Napoleonic Wars and reshaping Europe at the Congress of Vienna.",
+    "variables": [
+      { "id": "ney-attacks-morning", "label": "Marshal Ney attacks at dawn instead of waiting until midday" },
+      { "id": "prussians-delayed", "label": "Grouchy successfully prevents the Prussians from reaching the battlefield" },
+      { "id": "imperial-guard-earlier", "label": "Napoleon commits the Imperial Guard three hours earlier" },
+      { "id": "napoleon-health", "label": "Napoleon is in full health — no illness impairing his command decisions" }
+    ]
+  }
+]
