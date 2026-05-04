@@ -96,7 +96,16 @@ function PlausibilityMeter({ score, accent }) {
 export default function ResultView({ result, onReset }) {
   const meta = getMeta(result.battleId);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const score = parsePlausibility(result.sections.plausibility);
+
+  function copyShareLink() {
+    const url = `${window.location.origin}/sim/${result.battleId}/${result.variableId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -183,6 +192,17 @@ export default function ResultView({ result, onReset }) {
             className="flex-1 py-4 rounded-xl font-medium transition-all duration-200 text-gray-300 border border-gray-700 hover:border-amber-700 hover:text-amber-300 hover:bg-gray-900"
           >
             ← Run Another Simulation
+          </button>
+          <button
+            onClick={copyShareLink}
+            className="flex-1 py-4 rounded-xl font-medium transition-all duration-200 border"
+            style={{
+              borderColor: copied ? meta.accent : '#374151',
+              color: copied ? meta.accent : '#9ca3af',
+              background: copied ? `${meta.accent}11` : 'transparent',
+            }}
+          >
+            {copied ? '✓ Link Copied!' : '⎘ Copy Share Link'}
           </button>
         </div>
       </div>

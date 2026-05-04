@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Routes, Route } from 'react-router-dom';
 import BattleGrid from './components/BattleGrid';
 import VariableSelect from './components/VariableSelect';
 import LoadingScreen from './components/LoadingScreen';
@@ -30,26 +31,17 @@ function RateLimitScreen({ onBack }) {
   );
 }
 
-export default function App() {
-  const [battles, setBattles] = useState([]);
-  const [screen, setScreen] = useState('battles'); // battles | variables | loading | result | ratelimit
+// Shared simulation logic extracted so both routes can use it
+function useSimulator(battles) {
+  const navigate = useNavigate();
+  const [screen, setScreen] = useState('battles');
   const [selectedBattle, setSelectedBattle] = useState(null);
   const [selectedVariable, setSelectedVariable] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetch('/api/battles')
-      .then((r) => r.json())
-      .then(setBattles);
-  }, []);
-
-  function handleBattleSelect(battle) {
+  async function runSimulation(battle, variable) {
     setSelectedBattle(battle);
-    setScreen('variables');
-  }
-
-  async function handleVariableSelect(battle, variable) {
     setSelectedVariable(variable);
     setScreen('loading');
     setError(null);
@@ -63,23 +55,22 @@ export default function App() {
 
       const data = await res.json();
 
-      if (res.status === 429) {
-        setScreen('ratelimit');
-        return;
-      }
-
-      if (!res.ok) {
-        setError(data.error || 'Something went wrong.');
-        setScreen('variables');
-        return;
-      }
+      if (res.status === 429) { setScreen('ratelimit'); return; }
+      if (!res.ok) { setError(data.error || 'Something went wrong.'); setScreen('variables'); return; }
 
       setResult(data);
       setScreen('result');
+      navigate(`/sim/${battle.id}/${variable.id}`, { replace: true });
     } catch {
       setError('Could not reach the server. Please try again.');
       setScreen('variables');
     }
+  }
+
+  function handleBattleSelect(battle) {
+    setSelectedBattle(battle);
+    setScreen('variables');
+    navigate('/');
   }
 
   function handleReset() {
@@ -88,40 +79,116 @@ export default function App() {
     setSelectedVariable(null);
     setResult(null);
     setError(null);
+    navigate('/');
   }
 
-  if (screen === 'ratelimit') {
-    return <RateLimitScreen onBack={handleReset} />;
+  return { screen, setScreen, selectedBattle, selectedVariable, result, error, runSimulation, handleBattleSelect, handleReset };
+}
+
+function MainApp({ battles }) {
+  const sim = useSimulator(battles);
+
+  if (sim.screen === 'ratelimit') return <RateLimitScreen onBack={sim.handleReset} />;
+
+  if (sim.screen === 'battles' || battles.length === 0) {
+    return <BattleGrid battles={battles} onSelect={sim.handleBattleSelect} />;
   }
 
-  if (screen === 'battles' || battles.length === 0) {
-    return <BattleGrid battles={battles} onSelect={handleBattleSelect} />;
-  }
-
-  if (screen === 'variables') {
+  if (sim.screen === 'variables') {
     return (
       <>
-        {error && (
+        {sim.error && (
           <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-900/90 border border-red-700 text-red-200 px-6 py-3 rounded-xl text-sm backdrop-blur-sm">
-            {error}
+            {sim.error}
           </div>
         )}
-        <VariableSelect
-          battle={selectedBattle}
-          onSelect={handleVariableSelect}
-          onBack={handleReset}
-        />
+        <VariableSelect battle={sim.selectedBattle} onSelect={sim.runSimulation} onBack={sim.handleReset} />
       </>
     );
   }
 
-  if (screen === 'loading') {
-    return <LoadingScreen battle={selectedBattle} variable={selectedVariable} />;
+  if (sim.screen === 'loading') {
+    return <LoadingScreen battle={sim.selectedBattle} variable={sim.selectedVariable} />;
   }
 
-  if (screen === 'result' && result) {
-    return <ResultView result={result} onReset={handleReset} />;
+  if (sim.screen === 'result' && sim.result) {
+    return <ResultView result={sim.result} onReset={sim.handleReset} />;
   }
 
   return null;
+}
+
+// Handles /sim/:battleId/:variableId — auto-runs simulation on load
+function SharedSim({ battles }) {
+  const { battleId, variableId } = useParams();
+  const navigate = useNavigate();
+  const [screen, setScreen] = useState('loading');
+  const [result, setResult] = useState(null);
+  const [battle, setBattle] = useState(null);
+  const [variable, setVariable] = useState(null);
+
+  useEffect(() => {
+    if (!battles.length) return;
+
+    const b = battles.find((x) => x.id === battleId);
+    const v = b?.variables.find((x) => x.id === variableId);
+
+    if (!b || !v) { navigate('/'); return; }
+
+    setBattle(b);
+    setVariable(v);
+
+    fetch('/api/simulate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ battleId, variableId }),
+    })
+      .then((r) => {
+        if (r.status === 429) { setScreen('ratelimit'); return null; }
+        return r.json();
+      })
+      .then((data) => {
+        if (!data) return;
+        setResult(data);
+        setScreen('result');
+      })
+      .catch(() => navigate('/'));
+  }, [battles, battleId, variableId]);
+
+  if (screen === 'loading' && battle && variable) {
+    return <LoadingScreen battle={battle} variable={variable} />;
+  }
+
+  if (screen === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <p className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Loading…</p>
+      </div>
+    );
+  }
+
+  if (screen === 'ratelimit') {
+    return <RateLimitScreen onBack={() => navigate('/')} />;
+  }
+
+  if (screen === 'result' && result) {
+    return <ResultView result={result} onReset={() => navigate('/')} />;
+  }
+
+  return null;
+}
+
+export default function App() {
+  const [battles, setBattles] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/battles').then((r) => r.json()).then(setBattles);
+  }, []);
+
+  return (
+    <Routes>
+      <Route path="/sim/:battleId/:variableId" element={<SharedSim battles={battles} />} />
+      <Route path="*" element={<MainApp battles={battles} />} />
+    </Routes>
+  );
 }
