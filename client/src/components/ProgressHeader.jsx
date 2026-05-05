@@ -10,12 +10,17 @@ export default function ProgressHeader({ progress }) {
   return (
     <>
       <div
-        className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-gray-800/60 text-sm"
-        style={{ fontFamily: 'Inter, sans-serif', background: '#0a0a0a' }}
+        className="flex flex-wrap items-center gap-3 px-6 py-3 text-sm"
+        style={{
+          background: '#0A0806',
+          borderTop: '1px solid var(--iron)',
+          borderBottom: '1px solid var(--iron)',
+          fontFamily: 'Cinzel, serif',
+        }}
       >
         {/* Rank badge */}
         <span
-          className="px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase"
+          className="px-3 py-1 rounded text-xs font-semibold tracking-widest uppercase"
           style={{ background: `${color}22`, color, border: `1px solid ${color}55` }}
         >
           {label}
@@ -23,14 +28,14 @@ export default function ProgressHeader({ progress }) {
 
         {/* XP bar */}
         <div className="flex items-center gap-2 flex-1 min-w-[120px] max-w-[200px]">
-          <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--iron)' }}>
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}88, ${color})` }}
             />
           </div>
           {next && (
-            <span className="text-gray-600 text-xs whitespace-nowrap">
+            <span className="whitespace-nowrap" style={{ color: 'var(--ash)', fontSize: '0.6rem' }}>
               {nextAt - total} to {next.label}
             </span>
           )}
@@ -38,23 +43,28 @@ export default function ProgressHeader({ progress }) {
 
         {/* Streak */}
         {progress.streak > 0 && (
-          <span className="text-gray-400 flex items-center gap-1">
-            🔥 <span className="font-medium text-orange-400">{progress.streak}</span>
-            <span className="text-gray-600">day{progress.streak !== 1 ? 's' : ''}</span>
+          <span className="flex items-center gap-1" style={{ color: 'var(--ash)' }}>
+            ⚔ <span className="font-medium" style={{ color }}>{progress.streak}</span>
+            <span style={{ color: 'var(--ash)', fontSize: '0.65rem' }}>
+              day{progress.streak !== 1 ? 's' : ''}
+            </span>
           </span>
         )}
 
         {/* Simulation count */}
-        <span className="text-gray-600 hidden sm:block">
-          {total} simulation{total !== 1 ? 's' : ''}
+        <span className="hidden sm:block" style={{ color: 'var(--ash)', fontSize: '0.65rem' }}>
+          {total} battle{total !== 1 ? 's' : ''} fought
         </span>
 
-        {/* History button */}
+        {/* Chronicle button */}
         <button
           onClick={() => setShowLog(true)}
-          className="ml-auto text-gray-500 hover:text-amber-400 transition-colors text-xs tracking-widest uppercase"
+          className="ml-auto transition-colors"
+          style={{ color: 'var(--ash)', fontSize: '0.65rem', letterSpacing: '0.2em' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ash)'; }}
         >
-          ☰ History
+          ⚜ Chronicle
         </button>
       </div>
 

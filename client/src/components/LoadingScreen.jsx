@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { getMeta } from '../battleMeta';
 
 const MESSAGES = [
-  'Consulting the historical record…',
-  'Tracing the chain of causation…',
-  'Weighing geopolitical consequences…',
-  'Examining military logistics…',
-  'Assessing political ripple effects…',
-  'Calculating historical inertia…',
-  'Projecting long-term outcomes…',
+  'The ravens have been dispatched…',
+  'The Maester consults the scrolls…',
+  'The armies are on the move…',
+  'The council deliberates…',
+  'Fate hangs in the balance…',
+  'The histories are being rewritten…',
+  'The gods consider your question…',
 ];
 
 export default function LoadingScreen({ battle, variable }) {
@@ -30,72 +30,98 @@ export default function LoadingScreen({ battle, variable }) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-      style={{ background: 'radial-gradient(ellipse at 50% 40%, #111 0%, #030303 100%)', fontFamily: 'Inter, sans-serif' }}
+      style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}
     >
-      {/* Animated orb */}
-      <div className="relative mb-12">
-        {/* Outer ring */}
+      {/* Rotating compass rose */}
+      <div className="relative mb-12" style={{ width: '100px', height: '100px' }}>
+        {/* Outer ring — slow spin */}
         <div
-          className="absolute inset-0 rounded-full animate-ping opacity-20"
+          className="absolute inset-0 rounded-full"
           style={{
-            width: '120px',
-            height: '120px',
-            margin: '-20px',
-            border: `2px solid ${meta.accent}`,
+            border: `1px solid ${meta.accent}55`,
+            animation: 'spin-slow 8s linear infinite',
           }}
         />
-        {/* Middle ring */}
+        {/* Compass points on outer ring */}
         <div
-          className="absolute inset-0 rounded-full opacity-30"
+          className="absolute inset-0 rounded-full"
           style={{
-            width: '90px',
-            height: '90px',
-            margin: '-5px',
-            border: `1px solid ${meta.accent}`,
-            animation: 'spin 3s linear infinite',
+            border: `1px dashed ${meta.accent}33`,
+            animation: 'spin-slow 12s linear infinite reverse',
           }}
         />
-        {/* Core */}
+        {/* Inner ring — opposite spin */}
         <div
-          className="w-20 h-20 rounded-full flex items-center justify-center"
+          className="absolute rounded-full"
           style={{
-            background: `radial-gradient(circle, ${meta.accent}33 0%, transparent 70%)`,
-            border: `1px solid ${meta.accent}66`,
+            width: '64px',
+            height: '64px',
+            top: '18px',
+            left: '18px',
+            border: `1px solid ${meta.accent}77`,
+            animation: 'spin-slow 5s linear infinite reverse',
           }}
-        >
-          <div
-            className="w-8 h-8 rounded-full animate-pulse"
-            style={{ background: `radial-gradient(circle, ${meta.accent} 0%, ${meta.accent}44 100%)` }}
-          />
-        </div>
+        />
+        {/* Core diamond */}
+        <div
+          className="absolute"
+          style={{
+            width: '20px',
+            height: '20px',
+            top: '40px',
+            left: '40px',
+            background: meta.accent,
+            transform: 'rotate(45deg)',
+            animation: 'pulse-glow 2s ease-in-out infinite',
+            boxShadow: `0 0 12px ${meta.accent}`,
+          }}
+        />
+        {/* Glow halo */}
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: `radial-gradient(circle, ${meta.accent}22 0%, transparent 70%)`,
+          }}
+        />
       </div>
 
       {/* Battle + variable */}
-      <p className="text-gray-600 text-xs tracking-widest uppercase mb-2">{battle.name}</p>
       <p
-        className="text-lg mb-10 max-w-md leading-relaxed"
-        style={{ fontFamily: 'Playfair Display, serif', color: meta.accent }}
+        className="uppercase tracking-[0.25em] mb-3"
+        style={{ color: 'var(--ash)', fontFamily: 'Cinzel, serif', fontSize: '0.65rem' }}
+      >
+        {battle.name}
+      </p>
+      <p
+        className="mb-10 max-w-md leading-relaxed italic"
+        style={{ fontFamily: 'Cinzel, serif', color: meta.accent, fontSize: '1.1rem' }}
       >
         "{variable.label}"
       </p>
 
       {/* Rotating message */}
       <p
-        className="text-gray-400 text-sm tracking-wide transition-opacity duration-300"
-        style={{ opacity: fade ? 1 : 0 }}
+        className="tracking-wide transition-opacity duration-300"
+        style={{
+          opacity: fade ? 1 : 0,
+          color: 'var(--ash)',
+          fontFamily: 'EB Garamond, serif',
+          fontSize: '1rem',
+          fontStyle: 'italic',
+        }}
       >
         {MESSAGES[msgIndex]}
       </p>
 
-      {/* Dots */}
-      <div className="flex gap-2 mt-8">
+      {/* Gold dots */}
+      <div className="flex gap-3 mt-8">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
             className="w-1.5 h-1.5 rounded-full"
             style={{
               background: meta.accent,
-              animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
+              animation: `bounce 1.4s ease-in-out ${i * 0.25}s infinite`,
             }}
           />
         ))}
@@ -103,12 +129,16 @@ export default function LoadingScreen({ battle, variable }) {
 
       <style>{`
         @keyframes bounce {
-          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
           40% { transform: translateY(-8px); opacity: 1; }
         }
-        @keyframes spin {
+        @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.7; transform: rotate(45deg) scale(0.9); }
+          50% { opacity: 1; transform: rotate(45deg) scale(1.15); }
         }
       `}</style>
     </div>

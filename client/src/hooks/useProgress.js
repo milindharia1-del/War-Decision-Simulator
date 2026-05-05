@@ -3,18 +3,18 @@ import { useState, useCallback } from 'react';
 const KEY = 'war-sim-progress';
 
 const RANKS = [
-  { label: 'Recruit',        min: 0,  color: '#6b7280' },
-  { label: 'Scholar',        min: 3,  color: '#f59e0b' },
-  { label: 'Strategist',     min: 8,  color: '#f97316' },
-  { label: 'Historian',      min: 15, color: '#ef4444' },
-  { label: 'Grand Historian', min: 25, color: '#a855f7' },
+  { label: 'Peasant',       min: 0,  color: '#6B6357' },
+  { label: 'Squire',        min: 3,  color: '#C9A84C' },
+  { label: 'Knight',        min: 8,  color: '#A0522D' },
+  { label: 'Lord Commander', min: 15, color: '#7A0000' },
+  { label: 'King',          min: 25, color: '#6A0DAD' },
 ];
 
 const RANK_UP_LINES = {
-  Scholar:         'The archives are opening to you.',
-  Strategist:      'You think like a general now.',
-  Historian:       'History bends to your analysis.',
-  'Grand Historian': 'You have mastered the art of counterfactual reasoning.',
+  Squire:          'You have been called to serve.',
+  Knight:          'Kneel and rise — you are a Knight of the Realm.',
+  'Lord Commander': 'The black cloak is yours to bear.',
+  King:            'The realm bows before your wisdom.',
 };
 
 function todayStr() {

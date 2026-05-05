@@ -9,8 +9,20 @@ function BattleCard({ battle, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="group relative overflow-hidden rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
-      style={{ minHeight: '260px', background: meta.gradient }}
+      className="group relative overflow-hidden rounded-xl text-left transition-all duration-300"
+      style={{
+        minHeight: '260px',
+        background: meta.gradient,
+        border: '1px solid #3D3530',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = meta.accent;
+        e.currentTarget.style.boxShadow = `0 0 24px ${meta.accent}33, inset 0 0 40px ${meta.accent}11`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#3D3530';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
     >
       {/* Background photo */}
       <img
@@ -18,49 +30,42 @@ function BattleCard({ battle, onClick }) {
         alt=""
         onLoad={() => setImgLoaded(true)}
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-        style={{ opacity: imgLoaded ? 1 : 0 }}
+        style={{ opacity: imgLoaded ? 0.7 : 0 }}
       />
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20" />
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-        style={{ background: `radial-gradient(ellipse at center, ${meta.accent}, transparent 70%)` }}
-      />
+      {/* Dark overlays */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #07050Aee 0%, #07050A88 50%, #07050A44 100%)' }} />
 
-      {/* Border glow on hover */}
-      <div
-        className="absolute inset-0 rounded-2xl border border-transparent group-hover:border-opacity-60 transition-all duration-300"
-        style={{ borderColor: meta.accent }}
-      />
+      {/* Top gold rule */}
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${meta.accent}66, transparent)` }} />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col h-full p-6 pt-16">
+      <div className="relative z-10 flex flex-col h-full p-5 pt-14">
         <div className="mt-auto">
           <p
-            className="text-xs tracking-widest uppercase mb-2 font-medium"
-            style={{ color: meta.accent }}
+            className="text-xs tracking-[0.25em] uppercase mb-2"
+            style={{ color: meta.accent, fontFamily: 'Cinzel, serif' }}
           >
             {meta.era}
           </p>
           <h2
-            className="text-xl text-white mb-2 leading-tight font-semibold"
-            style={{ fontFamily: 'Playfair Display, serif' }}
+            className="text-lg text-white mb-2 leading-tight"
+            style={{ fontFamily: 'Cinzel, serif', fontWeight: 600 }}
           >
             {battle.name}
           </h2>
-          <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
+          <p className="text-sm leading-relaxed line-clamp-2" style={{ color: '#A89F8C', fontFamily: 'EB Garamond, serif', fontSize: '0.95rem' }}>
             {battle.summary}
           </p>
           <div className="mt-4 flex items-center gap-2">
-            <span className="text-xs text-gray-500">
-              {battle.variables.length} turning points
+            <span className="text-xs" style={{ color: '#6B6357', fontFamily: 'Cinzel, serif' }}>
+              {battle.variables.length} Turning Points
             </span>
             <span
-              className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-medium"
-              style={{ color: meta.accent }}
+              className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              style={{ color: meta.accent, fontFamily: 'Cinzel, serif' }}
             >
-              Explore →
+              Enter →
             </span>
           </div>
         </div>
@@ -71,21 +76,36 @@ function BattleCard({ battle, onClick }) {
 
 export default function BattleGrid({ battles, onSelect, progress }) {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="min-h-screen text-gray-100" style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}>
       {progress && <ProgressHeader progress={progress} />}
+
       {/* Header */}
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 text-center">
-        <p className="text-amber-600 text-xs tracking-[0.3em] uppercase mb-4">Alternate History Engine</p>
-        <h1
-          className="text-6xl text-white mb-4 leading-tight"
-          style={{ fontFamily: 'Playfair Display, serif' }}
-        >
-          War Decision <span className="text-amber-400">Simulator</span>
-        </h1>
-        <p className="text-gray-500 text-lg max-w-xl mx-auto leading-relaxed">
-          Select a historical turning point, change one variable, and let AI reason through the consequences.
+        <p style={{ color: 'var(--gold-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.35em' }} className="uppercase mb-5">
+          Alternate History Engine
         </p>
-        <div className="mt-6 w-16 h-px bg-amber-800 mx-auto" />
+        <h1
+          className="text-white mb-2 leading-tight"
+          style={{ fontFamily: 'Cinzel Decorative, serif', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 700, color: 'var(--gold)' }}
+        >
+          War Decision
+        </h1>
+        <h2
+          className="mb-5 leading-tight"
+          style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(1.1rem, 2.5vw, 1.7rem)', fontWeight: 400, color: '#A89F8C' }}
+        >
+          Simulator
+        </h2>
+        <p style={{ color: 'var(--ash)', fontFamily: 'EB Garamond, serif', fontSize: '1.15rem', fontStyle: 'italic' }} className="max-w-xl mx-auto leading-relaxed">
+          Select a historical turning point, alter one variable, and let the Maester reason through the consequences.
+        </p>
+
+        {/* Ornamental divider */}
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <div className="h-px flex-1 max-w-[120px]" style={{ background: 'linear-gradient(90deg, transparent, var(--gold-dim))' }} />
+          <span style={{ color: 'var(--gold)', fontSize: '1.1rem' }}>❖</span>
+          <div className="h-px flex-1 max-w-[120px]" style={{ background: 'linear-gradient(90deg, var(--gold-dim), transparent)' }} />
+        </div>
       </div>
 
       {/* Grid */}

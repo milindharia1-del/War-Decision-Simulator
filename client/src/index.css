@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+:root {
+  --bg-deep: #07050A;
+  --bg-stone: #110E18;
+  --gold: #C9A84C;
+  --gold-dim: #8B6914;
+  --blood: #7A0000;
+  --iron: #3D3530;
+  --parchment: #D4C4A0;
+  --ash: #6B6357;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--parchment);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--iron); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }

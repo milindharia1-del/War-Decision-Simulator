@@ -23,17 +23,30 @@ export default function SimLog({ history, onClose }) {
 
       {/* Drawer */}
       <div
-        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md flex flex-col border-l border-gray-800"
-        style={{ background: '#0d0d0d', fontFamily: 'Inter, sans-serif' }}
+        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md flex flex-col"
+        style={{
+          background: '#0A0806',
+          borderLeft: '1px solid var(--iron)',
+          fontFamily: 'EB Garamond, serif',
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-          <h2 className="text-white font-semibold" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Simulation History
-          </h2>
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{ borderBottom: '1px solid var(--iron)' }}
+        >
+          <div>
+            <h2 className="text-white" style={{ fontFamily: 'Cinzel, serif', fontWeight: 600, fontSize: '1.1rem' }}>
+              The Chronicle
+            </h2>
+            <p className="text-xs mt-0.5 italic" style={{ color: 'var(--ash)' }}>A record of your battles</p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-white transition-colors text-xl leading-none"
+            className="text-xl leading-none transition-colors"
+            style={{ color: 'var(--ash)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ash)'; }}
           >
             ×
           </button>
@@ -44,36 +57,52 @@ export default function SimLog({ history, onClose }) {
           {history.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
               <p className="text-5xl mb-4">📜</p>
-              <p className="text-gray-500">No simulations yet.</p>
-              <p className="text-gray-700 text-sm mt-1">Run your first alternate history above.</p>
+              <p style={{ color: 'var(--ash)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem' }}>
+                The chronicle is empty.
+              </p>
+              <p className="text-sm mt-1 italic" style={{ color: 'var(--iron)', fontFamily: 'EB Garamond, serif' }}>
+                Your first battle awaits.
+              </p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-800/60">
+            <ul>
               {history.map((entry, i) => {
                 const meta = getMeta(entry.battleId);
                 return (
-                  <li key={i} className="px-6 py-4 hover:bg-gray-900/50 transition-colors">
+                  <li
+                    key={i}
+                    className="px-6 py-4 transition-colors"
+                    style={{ borderBottom: '1px solid #1A1512' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#110E0A'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
                     <div className="flex items-start gap-3">
-                      {/* Accent dot */}
+                      {/* Accent diamond */}
                       <div
-                        className="w-2 h-2 rounded-full mt-1.5 shrink-0"
-                        style={{ background: meta.accent }}
+                        className="w-2 h-2 shrink-0 mt-1.5"
+                        style={{
+                          background: meta.accent,
+                          transform: 'rotate(45deg)',
+                          minWidth: '8px',
+                        }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-gray-200 text-sm font-medium truncate">
+                        <p className="text-sm font-medium truncate" style={{ color: 'var(--parchment)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem' }}>
                           {entry.battleName}
                         </p>
-                        <p className="text-gray-500 text-xs mt-0.5 leading-relaxed line-clamp-2">
+                        <p className="text-xs mt-0.5 leading-relaxed line-clamp-2 italic" style={{ color: 'var(--ash)', fontFamily: 'EB Garamond, serif', fontSize: '0.9rem' }}>
                           {entry.variableLabel}
                         </p>
                         <div className="flex items-center gap-3 mt-2">
-                          <span className="text-gray-600 text-xs">{timeAgo(entry.date)}</span>
+                          <span className="text-xs" style={{ color: 'var(--iron)', fontFamily: 'Cinzel, serif', fontSize: '0.6rem' }}>{timeAgo(entry.date)}</span>
                           {entry.plausibility !== null && entry.plausibility !== undefined && (
                             <span
-                              className="text-xs px-2 py-0.5 rounded-full font-medium"
+                              className="text-xs px-2 py-0.5 rounded font-medium"
                               style={{
                                 background: `${meta.accent}22`,
                                 color: meta.accent,
+                                fontFamily: 'Cinzel, serif',
+                                fontSize: '0.6rem',
                               }}
                             >
                               {entry.plausibility}/10
