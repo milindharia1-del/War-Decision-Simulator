@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import battlesRouter from './routes/battles.js';
 import simulateRouter from './routes/simulate.js';
+import votesRouter, { handleLeaderboard } from './routes/votes.js';
+import followupRouter from './routes/followup.js';
 import { simulateLimiter } from './middleware/rateLimiter.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -20,6 +22,9 @@ app.get('/api/health', (_req, res) => {
 });
 app.use('/api/battles', battlesRouter);
 app.use('/api/simulate', simulateLimiter, simulateRouter);
+app.use('/api/vote', votesRouter);
+app.get('/api/leaderboard', handleLeaderboard);
+app.use('/api/followup', followupRouter);
 
 // Serve battle images
 app.use('/images', express.static(join(__dirname, 'public/images')));

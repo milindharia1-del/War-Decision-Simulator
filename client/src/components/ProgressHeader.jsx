@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { rankInfo } from '../hooks/useProgress';
 import SimLog from './SimLog';
+import Leaderboard from './Leaderboard';
 
 export default function ProgressHeader({ progress }) {
   const [showLog, setShowLog] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const { label, color, pct, next, nextAt } = rankInfo(progress.totalSimulations);
   const total = progress.totalSimulations;
 
@@ -56,6 +58,17 @@ export default function ProgressHeader({ progress }) {
           {total} battle{total !== 1 ? 's' : ''} fought
         </span>
 
+        {/* Hall of Fame button */}
+        <button
+          onClick={() => setShowLeaderboard(true)}
+          className="transition-colors"
+          style={{ color: 'var(--ash)', fontSize: '0.65rem', letterSpacing: '0.2em' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ash)'; }}
+        >
+          ♔ Hall of Fame
+        </button>
+
         {/* Chronicle button */}
         <button
           onClick={() => setShowLog(true)}
@@ -70,6 +83,9 @@ export default function ProgressHeader({ progress }) {
 
       {showLog && (
         <SimLog history={progress.history} onClose={() => setShowLog(false)} />
+      )}
+      {showLeaderboard && (
+        <Leaderboard onClose={() => setShowLeaderboard(false)} />
       )}
     </>
   );

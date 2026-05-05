@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getMeta } from '../battleMeta';
 import { rankInfo } from '../hooks/useProgress';
+import Timeline from './Timeline';
+import FollowUp from './FollowUp';
 
 const SECTIONS = [
   {
@@ -99,11 +101,128 @@ function PlausibilityMeter({ score }) {
   );
 }
 
+const VOTE_KEY = (battleId, variableId) => `war-sim-vote__${battleId}__${variableId}`;
+
+function VerdictBlock({ result, accent }) {
+  const voteKey = VOTE_KEY(result.battleId, result.variableId);
+  const [voted, setVoted] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(voteKey)); } catch { return null; }
+  });
+  const [community, setCommunity] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  function castVote(agree) {
+    if (voted || loading) return;
+    setLoading(true);
+    fetch('/api/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        battleId: result.battleId,
+        variableId: result.variableId,
+        battleName: result.battleName,
+        variableLabel: result.variableLabel,
+        agree,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const v = { agree };
+        localStorage.setItem(voteKey, JSON.stringify(v));
+        setVoted(v);
+        setCommunity(data);
+      })
+      .finally(() => setLoading(false));
+  }
+
+  return (
+    <div className="rounded-lg p-6" style={{ background: 'var(--bg-stone)', border: '1px solid var(--iron)' }}>
+      <div className="flex items-center gap-3 mb-4">
+        <span style={{ color: 'var(--gold)' }}>⚖</span>
+        <h3 className="text-white" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', fontWeight: 600 }}>
+          Cast Your Verdict
+        </h3>
+        <p className="text-sm italic ml-1" style={{ color: 'var(--ash)', fontFamily: 'EB Garamond, serif' }}>
+          — Was the AI's analysis sound?
+        </p>
+      </div>
+
+      {!voted ? (
+        <div className="flex gap-3">
+          <button
+            onClick={() => castVote(true)}
+            disabled={loading}
+            className="flex-1 py-3 rounded transition-all text-sm"
+            style={{
+              border: '1px solid var(--iron)',
+              color: 'var(--parchment)',
+              background: 'transparent',
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.7rem',
+              letterSpacing: '0.1em',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.borderColor = '#2E8B57'; e.currentTarget.style.color = '#2E8B57'; e.currentTarget.style.background = '#2E8B5711'; }}}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--iron)'; e.currentTarget.style.color = 'var(--parchment)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            ✓ The Maester is Right
+          </button>
+          <button
+            onClick={() => castVote(false)}
+            disabled={loading}
+            className="flex-1 py-3 rounded transition-all text-sm"
+            style={{
+              border: '1px solid var(--iron)',
+              color: 'var(--parchment)',
+              background: 'transparent',
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.7rem',
+              letterSpacing: '0.1em',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => { if (!loading) { e.currentTarget.style.borderColor = 'var(--blood)'; e.currentTarget.style.color = '#C0392B'; e.currentTarget.style.background = '#7A000011'; }}}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--iron)'; e.currentTarget.style.color = 'var(--parchment)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            ✗ I Disagree
+          </button>
+        </div>
+      ) : (
+        <div className="text-center py-2">
+          <p className="text-sm mb-1" style={{ color: voted.agree ? '#2E8B57' : '#C0392B', fontFamily: 'Cinzel, serif', fontSize: '0.75rem' }}>
+            {voted.agree ? '✓ You agreed with the Maester' : '✗ You challenged the Maester'}
+          </p>
+          {community && (
+            <p className="italic text-sm" style={{ color: 'var(--ash)', fontFamily: 'EB Garamond, serif' }}>
+              {community.agreePct !== null ? `${community.agreePct}% of historians agree` : ''}
+              {community.agreePct !== null && community.avgScore !== null ? ' · ' : ''}
+              {community.avgScore !== null ? `Community score: ${community.avgScore}/10` : ''}
+              {community.totalVotes !== undefined ? ` (${community.totalVotes} vote${community.totalVotes !== 1 ? 's' : ''})` : ''}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ResultView({ result, onReset, progress }) {
   const meta = getMeta(result.battleId);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
   const score = parsePlausibility(result.sections.plausibility);
+
+  useEffect(() => {
+    fetch('/api/vote/sim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        battleId: result.battleId,
+        variableId: result.variableId,
+        battleName: result.battleName,
+        variableLabel: result.variableLabel,
+      }),
+    }).catch(() => {});
+  }, [result.battleId, result.variableId]);
 
   function copyShareLink() {
     const url = `${window.location.origin}/sim/${result.battleId}/${result.variableId}`;
@@ -140,8 +259,13 @@ export default function ResultView({ result, onReset, progress }) {
         </div>
       </div>
 
+      {/* Timeline */}
+      <div className="max-w-4xl mx-auto px-6 pt-8">
+        <Timeline result={result} />
+      </div>
+
       {/* Sections */}
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-4">
+      <div className="max-w-4xl mx-auto px-6 py-8 space-y-4">
         {SECTIONS.map((s) => {
           const text = result.sections[s.key];
           if (!text) return null;
@@ -196,6 +320,9 @@ export default function ResultView({ result, onReset, progress }) {
           </p>
         )}
 
+        {/* Community verdict */}
+        <VerdictBlock result={result} accent={meta.accent} />
+
         {/* Rank status */}
         {progress && (() => {
           const { label, color, pct, next, nextAt } = rankInfo(progress.totalSimulations);
@@ -218,6 +345,9 @@ export default function ResultView({ result, onReset, progress }) {
             </div>
           );
         })()}
+
+        {/* Follow-up questions */}
+        <FollowUp result={result} />
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
