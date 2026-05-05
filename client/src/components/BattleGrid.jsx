@@ -1,6 +1,80 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getMeta } from '../battleMeta';
 import ProgressHeader from './ProgressHeader';
+
+const ALL_IMAGES = [
+  '/images/stalingrad.jpg',
+  '/images/dday.jpg',
+  '/images/battle-of-britain.jpg',
+  '/images/hiroshima.jpg',
+  '/images/cuban-missile-crisis.jpg',
+  '/images/midway.jpg',
+  '/images/pearl-harbor.jpg',
+  '/images/berlin-1945.jpg',
+  '/images/tet-offensive.jpg',
+  '/images/waterloo.jpg',
+];
+
+function BackgroundSlideshow() {
+  const [current, setCurrent] = useState(0);
+  const [next, setNext] = useState(1);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setCurrent((c) => (c + 1) % ALL_IMAGES.length);
+        setNext((n) => (n + 1) % ALL_IMAGES.length);
+        setFading(false);
+      }, 1800);
+    }, 5500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      {/* Current image */}
+      <img
+        key={current}
+        src={ALL_IMAGES[current]}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          opacity: fading ? 0 : 1,
+          transition: 'opacity 1.8s ease-in-out',
+          filter: 'brightness(0.45) contrast(1.1) saturate(0.7)',
+          transform: 'scale(1.05)',
+        }}
+      />
+      {/* Next image — fades in underneath */}
+      <img
+        key={`next-${next}`}
+        src={ALL_IMAGES[next]}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          opacity: fading ? 1 : 0,
+          transition: 'opacity 1.8s ease-in-out',
+          filter: 'brightness(0.45) contrast(1.1) saturate(0.7)',
+          transform: 'scale(1.05)',
+        }}
+      />
+      {/* Dark vignette overlay — heavier at edges, slightly lighter at centre */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 40%, rgba(7,5,10,0.55) 0%, rgba(7,5,10,0.85) 100%)',
+        }}
+      />
+      {/* Gold dust shimmer at very bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-48"
+        style={{ background: 'linear-gradient(to top, rgba(7,5,10,0.98) 0%, transparent 100%)' }}
+      />
+    </div>
+  );
+}
 
 function BattleCard({ battle, onClick }) {
   const meta = getMeta(battle.id);
@@ -117,20 +191,7 @@ export default function BattleGrid({ battles, onSelect, progress }) {
       className="min-h-screen text-gray-100 relative"
       style={{ fontFamily: 'EB Garamond, serif' }}
     >
-      {/* Full-page atmospheric background */}
-      <div
-        className="fixed inset-0 -z-10"
-        style={{
-          background: 'linear-gradient(160deg, #0D0A04 0%, #140E08 40%, #0A0508 70%, #07050A 100%)',
-        }}
-      />
-      {/* Subtle noise texture */}
-      <div
-        className="fixed inset-0 -z-10 opacity-30"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E")`,
-        }}
-      />
+      <BackgroundSlideshow />
 
       {progress && <ProgressHeader progress={progress} />}
 
