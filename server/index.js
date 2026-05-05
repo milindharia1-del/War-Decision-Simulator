@@ -21,6 +21,9 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/battles', battlesRouter);
 app.use('/api/simulate', simulateLimiter, simulateRouter);
 
+// Serve battle images
+app.use('/images', express.static(join(__dirname, 'public/images')));
+
 // Serve built React client
 const distPath = join(__dirname, '../client/dist');
 app.use(express.static(distPath));
