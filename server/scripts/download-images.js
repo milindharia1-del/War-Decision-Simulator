@@ -41,8 +41,17 @@ async function getWikipediaThumbnail(article) {
   return data.originalimage?.source || data.thumbnail?.source || null;
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 for (const [id, article] of Object.entries(BATTLES)) {
   const dest = join(OUT_DIR, `${id}.jpg`);
+
+  // Skip if already downloaded (> 10 KB means it's a real image)
+  if (existsSync(dest) && (await import('fs')).statSync(dest).size > 10_000) {
+    console.log(`${id} → already downloaded, skipping`);
+    continue;
+  }
+
   try {
     process.stdout.write(`${id} → fetching Wikipedia summary...`);
     const imgUrl = await getWikipediaThumbnail(article);
@@ -53,6 +62,8 @@ for (const [id, article] of Object.entries(BATTLES)) {
   } catch (err) {
     console.log(` ✗ ${err.message}`);
   }
+
+  await sleep(2000); // avoid Wikipedia rate limiting
 }
 
 console.log('\nDone. Images saved to server/public/images/');
