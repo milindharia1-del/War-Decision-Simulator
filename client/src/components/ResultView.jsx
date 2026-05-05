@@ -59,7 +59,7 @@ function PlausibilityMeter({ score }) {
   return (
     <div
       className="rounded-lg p-6"
-      style={{ background: 'var(--bg-stone)', border: '1px solid var(--iron)' }}
+      style={{ background: 'rgba(17,14,24,0.75)', border: '1px solid rgba(61,53,48,0.6)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
     >
       <div className="flex items-center gap-3 mb-5">
         <span className="text-2xl" style={{ color: '#C9A84C' }}>⚖</span>
@@ -136,7 +136,7 @@ function VerdictBlock({ result, accent }) {
   }
 
   return (
-    <div className="rounded-lg p-6" style={{ background: 'var(--bg-stone)', border: '1px solid var(--iron)' }}>
+    <div className="rounded-lg p-6" style={{ background: 'rgba(17,14,24,0.75)', border: '1px solid rgba(61,53,48,0.6)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}>
       <div className="flex items-center gap-3 mb-4">
         <span style={{ color: 'var(--gold)' }}>⚖</span>
         <h3 className="text-white" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', fontWeight: 600 }}>
@@ -233,39 +233,56 @@ export default function ResultView({ result, onReset, progress }) {
   }
 
   return (
-    <div className="min-h-screen text-gray-100" style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}>
-      {/* Hero */}
-      <div className="relative h-80 overflow-hidden" style={{ background: meta.gradient }}>
+    <div className="min-h-screen text-gray-100 relative" style={{ fontFamily: 'EB Garamond, serif' }}>
+
+      {/* Full-screen Ken Burns background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
         <img
           src={meta.img}
           alt=""
           onLoad={() => setImgLoaded(true)}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: imgLoaded ? 1 : 0, filter: 'brightness(0.6) contrast(1.15) saturate(0.75)' }}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            opacity: imgLoaded ? 1 : 0,
+            transition: 'opacity 1.2s ease',
+            filter: 'brightness(0.3) contrast(1.15) saturate(0.65)',
+            animation: 'kenburns-result 28s ease-in-out infinite alternate',
+          }}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(7,5,10,0.15) 0%, rgba(7,5,10,0.55) 55%, rgba(7,5,10,1) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 20%, rgba(7,5,10,0.4) 0%, rgba(7,5,10,0.82) 100%)' }} />
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${meta.accent}88, transparent)` }} />
+      </div>
 
-        <div className="absolute bottom-8 left-0 right-0 max-w-4xl mx-auto px-6">
-          <p className="uppercase mb-1 tracking-[0.25em]" style={{ color: meta.accent, fontFamily: 'Cinzel, serif', fontSize: '0.65rem' }}>
-            Alternate History · {result.battleName}
-          </p>
-          <h1
-            className="text-3xl md:text-4xl text-white leading-tight max-w-2xl"
-            style={{ fontFamily: 'Cinzel, serif', fontWeight: 600 }}
-          >
-            {result.variableLabel}
-          </h1>
+      {/* Sticky header with title */}
+      <div className="relative z-10 pt-10 pb-8 px-6 text-center">
+        <p className="uppercase tracking-[0.3em] mb-3" style={{ color: meta.accent, fontFamily: 'Cinzel, serif', fontSize: '0.65rem', textShadow: `0 0 20px ${meta.accent}` }}>
+          Alternate History · {result.battleName}
+        </p>
+        <h1
+          className="text-white leading-tight max-w-3xl mx-auto"
+          style={{
+            fontFamily: 'Cinzel, serif',
+            fontWeight: 700,
+            fontSize: 'clamp(1.5rem, 4vw, 2.8rem)',
+            textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.5)',
+          }}
+        >
+          {result.variableLabel}
+        </h1>
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <div className="h-px w-20" style={{ background: `linear-gradient(90deg, transparent, ${meta.accent}66)` }} />
+          <span style={{ color: meta.accent, fontSize: '0.8rem' }}>❖</span>
+          <div className="h-px w-20" style={{ background: `linear-gradient(90deg, ${meta.accent}66, transparent)` }} />
         </div>
       </div>
 
       {/* Timeline */}
-      <div className="max-w-4xl mx-auto px-6 pt-8">
+      <div className="max-w-4xl mx-auto px-6 pb-6">
         <Timeline result={result} />
       </div>
 
       {/* Sections */}
-      <div className="max-w-4xl mx-auto px-6 py-8 space-y-4">
+      <div className="max-w-4xl mx-auto px-6 py-4 space-y-4">
         {SECTIONS.map((s) => {
           const text = result.sections[s.key];
           if (!text) return null;
@@ -274,9 +291,11 @@ export default function ResultView({ result, onReset, progress }) {
               key={s.key}
               className="rounded-lg p-6 transition-all"
               style={{
-                background: 'var(--bg-stone)',
-                border: '1px solid var(--iron)',
+                background: 'rgba(17,14,24,0.75)',
+                border: '1px solid rgba(61,53,48,0.6)',
                 borderLeft: `3px solid ${s.color}`,
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
               }}
             >
               <div className="flex items-start gap-4">
@@ -381,6 +400,16 @@ export default function ResultView({ result, onReset, progress }) {
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes kenburns-result {
+          0%   { transform: scale(1.0) translate(0%, 0%); }
+          25%  { transform: scale(1.05) translate(0.8%, -0.5%); }
+          50%  { transform: scale(1.08) translate(-0.5%, 0.8%); }
+          75%  { transform: scale(1.04) translate(-1%, -0.3%); }
+          100% { transform: scale(1.06) translate(0.5%, 0.5%); }
+        }
+      `}</style>
     </div>
   );
 }
