@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import battlesRouter from './routes/battles.js';
 import simulateRouter from './routes/simulate.js';
+import { simulateLimiter } from './middleware/rateLimiter.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -18,7 +19,7 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 app.use('/api/battles', battlesRouter);
-app.use('/api/simulate', simulateRouter);
+app.use('/api/simulate', simulateLimiter, simulateRouter);
 
 // Serve built React client
 const distPath = join(__dirname, '../client/dist');
