@@ -4,6 +4,8 @@ import BattleGrid from './components/BattleGrid';
 import VariableSelect from './components/VariableSelect';
 import LoadingScreen from './components/LoadingScreen';
 import ResultView from './components/ResultView';
+import RankUpToast from './components/RankUpToast';
+import useProgress from './hooks/useProgress';
 
 function RateLimitScreen({ onBack }) {
   return (
@@ -12,10 +14,7 @@ function RateLimitScreen({ onBack }) {
       style={{ background: '#030303', fontFamily: 'Inter, sans-serif' }}
     >
       <div className="text-6xl mb-6">⏳</div>
-      <h2
-        className="text-3xl text-amber-400 mb-4"
-        style={{ fontFamily: 'Playfair Display, serif' }}
-      >
+      <h2 className="text-3xl text-amber-400 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
         Daily Limit Reached
       </h2>
       <p className="text-gray-400 max-w-md leading-relaxed mb-8">
@@ -31,8 +30,7 @@ function RateLimitScreen({ onBack }) {
   );
 }
 
-// Shared simulation logic extracted so both routes can use it
-function useSimulator(battles) {
+function useSimulator(battles, recordSimulation) {
   const navigate = useNavigate();
   const [screen, setScreen] = useState('battles');
   const [selectedBattle, setSelectedBattle] = useState(null);
@@ -52,12 +50,10 @@ function useSimulator(battles) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ battleId: battle.id, variableId: variable.id }),
       });
-
       const data = await res.json();
-
       if (res.status === 429) { setScreen('ratelimit'); return; }
       if (!res.ok) { setError(data.error || 'Something went wrong.'); setScreen('variables'); return; }
-
+      recordSimulation(data);
       setResult(data);
       setScreen('result');
       navigate(`/sim/${battle.id}/${variable.id}`, { replace: true });
@@ -82,16 +78,16 @@ function useSimulator(battles) {
     navigate('/');
   }
 
-  return { screen, setScreen, selectedBattle, selectedVariable, result, error, runSimulation, handleBattleSelect, handleReset };
+  return { screen, selectedBattle, selectedVariable, result, error, runSimulation, handleBattleSelect, handleReset };
 }
 
-function MainApp({ battles }) {
-  const sim = useSimulator(battles);
+function MainApp({ battles, progress, recordSimulation, rankUpToast }) {
+  const sim = useSimulator(battles, recordSimulation);
 
   if (sim.screen === 'ratelimit') return <RateLimitScreen onBack={sim.handleReset} />;
 
   if (sim.screen === 'battles' || battles.length === 0) {
-    return <BattleGrid battles={battles} onSelect={sim.handleBattleSelect} />;
+    return <BattleGrid battles={battles} onSelect={sim.handleBattleSelect} progress={progress} />;
   }
 
   if (sim.screen === 'variables') {
@@ -112,14 +108,13 @@ function MainApp({ battles }) {
   }
 
   if (sim.screen === 'result' && sim.result) {
-    return <ResultView result={sim.result} onReset={sim.handleReset} />;
+    return <ResultView result={sim.result} onReset={sim.handleReset} progress={progress} />;
   }
 
   return null;
 }
 
-// Handles /sim/:battleId/:variableId — auto-runs simulation on load
-function SharedSim({ battles }) {
+function SharedSim({ battles, recordSimulation }) {
   const { battleId, variableId } = useParams();
   const navigate = useNavigate();
   const [screen, setScreen] = useState('loading');
@@ -129,12 +124,9 @@ function SharedSim({ battles }) {
 
   useEffect(() => {
     if (!battles.length) return;
-
     const b = battles.find((x) => x.id === battleId);
     const v = b?.variables.find((x) => x.id === variableId);
-
     if (!b || !v) { navigate('/'); return; }
-
     setBattle(b);
     setVariable(v);
 
@@ -143,52 +135,37 @@ function SharedSim({ battles }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ battleId, variableId }),
     })
-      .then((r) => {
-        if (r.status === 429) { setScreen('ratelimit'); return null; }
-        return r.json();
-      })
-      .then((data) => {
-        if (!data) return;
-        setResult(data);
-        setScreen('result');
-      })
+      .then((r) => { if (r.status === 429) { setScreen('ratelimit'); return null; } return r.json(); })
+      .then((data) => { if (!data) return; recordSimulation(data); setResult(data); setScreen('result'); })
       .catch(() => navigate('/'));
   }, [battles, battleId, variableId]);
 
-  if (screen === 'loading' && battle && variable) {
-    return <LoadingScreen battle={battle} variable={variable} />;
-  }
-
-  if (screen === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <p className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Loading…</p>
-      </div>
-    );
-  }
-
-  if (screen === 'ratelimit') {
-    return <RateLimitScreen onBack={() => navigate('/')} />;
-  }
-
-  if (screen === 'result' && result) {
-    return <ResultView result={result} onReset={() => navigate('/')} />;
-  }
-
+  if (screen === 'loading' && battle && variable) return <LoadingScreen battle={battle} variable={variable} />;
+  if (screen === 'loading') return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <p className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Loading…</p>
+    </div>
+  );
+  if (screen === 'ratelimit') return <RateLimitScreen onBack={() => navigate('/')} />;
+  if (screen === 'result' && result) return <ResultView result={result} onReset={() => navigate('/')} />;
   return null;
 }
 
 export default function App() {
   const [battles, setBattles] = useState([]);
+  const { progress, recordSimulation, rankUpToast } = useProgress();
 
   useEffect(() => {
     fetch('/api/battles').then((r) => r.json()).then(setBattles);
   }, []);
 
   return (
-    <Routes>
-      <Route path="/sim/:battleId/:variableId" element={<SharedSim battles={battles} />} />
-      <Route path="*" element={<MainApp battles={battles} />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/sim/:battleId/:variableId" element={<SharedSim battles={battles} recordSimulation={recordSimulation} />} />
+        <Route path="*" element={<MainApp battles={battles} progress={progress} recordSimulation={recordSimulation} rankUpToast={rankUpToast} />} />
+      </Routes>
+      <RankUpToast rank={rankUpToast} />
+    </>
   );
 }

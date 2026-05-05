@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getMeta } from '../battleMeta';
+import { rankInfo } from '../hooks/useProgress';
 
 const SECTIONS = [
   {
@@ -93,7 +94,7 @@ function PlausibilityMeter({ score, accent }) {
   );
 }
 
-export default function ResultView({ result, onReset }) {
+export default function ResultView({ result, onReset, progress }) {
   const meta = getMeta(result.battleId);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -185,8 +186,25 @@ export default function ResultView({ result, onReset }) {
           </p>
         )}
 
+        {/* Rank status */}
+        {progress && (() => {
+          const { label, color, pct, next, nextAt } = rankInfo(progress.totalSimulations);
+          return (
+            <div className="flex items-center gap-3 px-1">
+              <span className="text-xs px-2 py-1 rounded-full font-semibold tracking-widest uppercase"
+                style={{ background: `${color}22`, color, border: `1px solid ${color}44` }}>
+                {label}
+              </span>
+              <div className="flex-1 h-1 bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
+              </div>
+              {next && <span className="text-gray-600 text-xs">{nextAt - progress.totalSimulations} to {next.label}</span>}
+            </div>
+          );
+        })()}
+
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             onClick={onReset}
             className="flex-1 py-4 rounded-xl font-medium transition-all duration-200 text-gray-300 border border-gray-700 hover:border-amber-700 hover:text-amber-300 hover:bg-gray-900"

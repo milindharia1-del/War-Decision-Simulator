@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getMeta } from '../battleMeta';
+import ProgressHeader from './ProgressHeader';
 
 function BattleCard({ battle, onClick }) {
   const meta = getMeta(battle.id);
@@ -68,9 +69,10 @@ function BattleCard({ battle, onClick }) {
   );
 }
 
-export default function BattleGrid({ battles, onSelect }) {
+export default function BattleGrid({ battles, onSelect, progress }) {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100" style={{ fontFamily: 'Inter, sans-serif' }}>
+      {progress && <ProgressHeader progress={progress} />}
       {/* Header */}
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 text-center">
         <p className="text-amber-600 text-xs tracking-[0.3em] uppercase mb-4">Alternate History Engine</p>
