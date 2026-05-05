@@ -117,6 +117,6 @@ export function handleLeaderboard(req, res) {
       };
     });
   res.json(entries);
-});
+}
 
 export default router;
