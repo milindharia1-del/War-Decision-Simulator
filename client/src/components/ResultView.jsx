@@ -235,15 +235,15 @@ export default function ResultView({ result, onReset, progress }) {
   return (
     <div className="min-h-screen text-gray-100" style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}>
       {/* Hero */}
-      <div className="relative h-64 overflow-hidden" style={{ background: meta.gradient }}>
+      <div className="relative h-80 overflow-hidden" style={{ background: meta.gradient }}>
         <img
           src={meta.img}
           alt=""
           onLoad={() => setImgLoaded(true)}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: imgLoaded ? 0.25 : 0 }}
+          style={{ opacity: imgLoaded ? 1 : 0, filter: 'brightness(0.6) contrast(1.15) saturate(0.75)' }}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #07050A33 0%, #07050Acc 60%, #07050A 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(7,5,10,0.15) 0%, rgba(7,5,10,0.55) 55%, rgba(7,5,10,1) 100%)' }} />
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${meta.accent}88, transparent)` }} />
 
         <div className="absolute bottom-8 left-0 right-0 max-w-4xl mx-auto px-6">

@@ -11,15 +11,15 @@ export default function VariableSelect({ battle, onSelect, onBack }) {
   return (
     <div className="min-h-screen text-gray-100" style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}>
       {/* Hero banner */}
-      <div className="relative h-72 overflow-hidden" style={{ background: meta.gradient }}>
+      <div className="relative h-80 overflow-hidden" style={{ background: meta.gradient }}>
         <img
           src={meta.img}
           alt=""
           onLoad={() => setImgLoaded(true)}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: imgLoaded ? 0.3 : 0 }}
+          style={{ opacity: imgLoaded ? 1 : 0, filter: 'brightness(0.65) contrast(1.1) saturate(0.8)' }}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #07050A55 0%, #07050AEE 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(7,5,10,0.2) 0%, rgba(7,5,10,0.5) 50%, rgba(7,5,10,0.97) 100%)' }} />
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${meta.accent}88, transparent)` }} />
 
         {/* Back button */}
