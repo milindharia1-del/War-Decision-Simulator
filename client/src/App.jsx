@@ -5,26 +5,25 @@ import VariableSelect from './components/VariableSelect';
 import LoadingScreen from './components/LoadingScreen';
 import ResultView from './components/ResultView';
 import RankUpToast from './components/RankUpToast';
+import CampaignApp from './components/CampaignApp';
 import useProgress from './hooks/useProgress';
 
 function RateLimitScreen({ onBack }) {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-      style={{ background: '#030303', fontFamily: 'Inter, sans-serif' }}
-    >
-      <div className="text-6xl mb-6">⏳</div>
-      <h2 className="text-3xl text-amber-400 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-        Daily Limit Reached
-      </h2>
-      <p className="text-gray-400 max-w-md leading-relaxed mb-8">
-        You've used your 3 simulations for today. History will still be there tomorrow — come back then.
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: 'var(--bg-deep)', fontFamily: 'EB Garamond, serif' }}>
+      <div className="text-5xl mb-6" style={{ color: 'var(--gold)' }}>⏳</div>
+      <h2 className="text-3xl mb-4" style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold)' }}>Daily Limit Reached</h2>
+      <p className="max-w-md leading-relaxed mb-8 italic" style={{ color: 'var(--ash)', fontFamily: 'EB Garamond, serif', fontSize: '1.1rem' }}>
+        You've used your 3 simulations for today. History will still be there tomorrow.
       </p>
       <button
         onClick={onBack}
-        className="px-6 py-3 rounded-xl border border-gray-700 text-gray-400 hover:border-amber-700 hover:text-amber-300 transition-all text-sm"
+        className="px-6 py-3 rounded uppercase tracking-widest transition-all text-sm"
+        style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', border: '1px solid var(--iron)', color: 'var(--ash)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold-dim)'; e.currentTarget.style.color = 'var(--gold)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--iron)'; e.currentTarget.style.color = 'var(--ash)'; }}
       >
-        ← Back to battles
+        ◂ Back to Battles
       </button>
     </div>
   );
@@ -43,7 +42,6 @@ function useSimulator(battles, recordSimulation) {
     setSelectedVariable(variable);
     setScreen('loading');
     setError(null);
-
     try {
       const res = await fetch('/api/simulate', {
         method: 'POST',
@@ -81,13 +79,13 @@ function useSimulator(battles, recordSimulation) {
   return { screen, selectedBattle, selectedVariable, result, error, runSimulation, handleBattleSelect, handleReset };
 }
 
-function MainApp({ battles, progress, recordSimulation, rankUpToast }) {
+function MainApp({ battles, progress, recordSimulation, onCampaign }) {
   const sim = useSimulator(battles, recordSimulation);
 
   if (sim.screen === 'ratelimit') return <RateLimitScreen onBack={sim.handleReset} />;
 
   if (sim.screen === 'battles' || battles.length === 0) {
-    return <BattleGrid battles={battles} onSelect={sim.handleBattleSelect} progress={progress} />;
+    return <BattleGrid battles={battles} onSelect={sim.handleBattleSelect} progress={progress} onCampaign={onCampaign} />;
   }
 
   if (sim.screen === 'variables') {
@@ -129,7 +127,6 @@ function SharedSim({ battles, recordSimulation }) {
     if (!b || !v) { navigate('/'); return; }
     setBattle(b);
     setVariable(v);
-
     fetch('/api/simulate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,8 +139,8 @@ function SharedSim({ battles, recordSimulation }) {
 
   if (screen === 'loading' && battle && variable) return <LoadingScreen battle={battle} variable={variable} />;
   if (screen === 'loading') return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <p className="text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Loading…</p>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-deep)' }}>
+      <p style={{ color: 'var(--ash)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem' }}>Loading…</p>
     </div>
   );
   if (screen === 'ratelimit') return <RateLimitScreen onBack={() => navigate('/')} />;
@@ -153,6 +150,7 @@ function SharedSim({ battles, recordSimulation }) {
 
 export default function App() {
   const [battles, setBattles] = useState([]);
+  const [mode, setMode] = useState('freeplay'); // 'freeplay' | 'campaign'
   const { progress, recordSimulation, rankUpToast } = useProgress();
 
   useEffect(() => {
@@ -163,7 +161,11 @@ export default function App() {
     <>
       <Routes>
         <Route path="/sim/:battleId/:variableId" element={<SharedSim battles={battles} recordSimulation={recordSimulation} />} />
-        <Route path="*" element={<MainApp battles={battles} progress={progress} recordSimulation={recordSimulation} rankUpToast={rankUpToast} />} />
+        <Route path="*" element={
+          mode === 'campaign'
+            ? <CampaignApp battles={battles} onExit={() => setMode('freeplay')} />
+            : <MainApp battles={battles} progress={progress} recordSimulation={recordSimulation} onCampaign={() => setMode('campaign')} />
+        } />
       </Routes>
       <RankUpToast rank={rankUpToast} />
     </>

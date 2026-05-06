@@ -185,7 +185,7 @@ function BattleCard({ battle, onClick }) {
   );
 }
 
-export default function BattleGrid({ battles, onSelect, progress }) {
+export default function BattleGrid({ battles, onSelect, progress, onCampaign }) {
   return (
     <div
       className="min-h-screen text-gray-100 relative"
@@ -221,6 +221,31 @@ export default function BattleGrid({ battles, onSelect, progress }) {
         >
           Select a historical turning point, alter one variable, and let the Maester reason through the consequences.
         </p>
+
+        {/* Campaign mode button */}
+        {onCampaign && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={onCampaign}
+              className="flex items-center gap-3 px-8 py-3 rounded-lg uppercase tracking-widest transition-all duration-300"
+              style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                background: '#C9A84C22',
+                border: '1px solid #C9A84C88',
+                color: 'var(--gold)',
+                boxShadow: '0 0 20px rgba(201,168,76,0.2)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#C9A84C44'; e.currentTarget.style.boxShadow = '0 0 32px rgba(201,168,76,0.4)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#C9A84C22'; e.currentTarget.style.boxShadow = '0 0 20px rgba(201,168,76,0.2)'; }}
+            >
+              <span style={{ fontSize: '1.1rem' }}>⚔</span>
+              Campaign Mode
+              <span style={{ fontSize: '0.65rem', color: 'var(--gold-dim)', letterSpacing: '0.1em' }}>NEW</span>
+            </button>
+          </div>
+        )}
 
         {/* Ornamental divider */}
         <div className="mt-7 flex items-center justify-center gap-4">
